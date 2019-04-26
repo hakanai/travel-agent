@@ -1,0 +1,46 @@
+[
+  {
+    "language": "ar", "country": "SA", "timeZone": "Asia/Riyadh",
+    "comment": "Right-to-left language",
+  },
+  {
+    "language": "de", "country": "DE", "timeZone": "Europe/Berlin",
+    "comment": "Hard S collation, comma/period swap for number formatting"
+  },
+  {
+    "language": "en", "country": "US", "timeZone": "America/Los_Angeles",
+    "comment": "Nothing particularly noteworthy, but here for the sake of comparison"
+  },
+  {
+    "language": "es", "country": "PE", "timeZone": "America/Lima",
+    "comment": "Locale inheriting from es_419 which traditionally breaks locale parsers"
+  },
+  {
+    "language": "hi", "country": "IN", "timeZone": "Asia/Kolkata",
+    "comment": ":30 time zone"
+  },
+  {
+    "language": "ja", "country": "JP", "timeZone": "Asia/Tokyo",
+    "comment": "Various characters with equivalent Unicode normalisation"
+  },
+  {
+    "language": "ko", "country": "KR", "timeZone": "Asia/Seoul",
+    "comment": "Interesting Unicode normalisation"
+  },
+  {
+    "language": "ne", "country": "NP", "timeZone": "Asia/Kathmandu",
+    "comment": ":45 time zone",
+  },
+  {
+    "language": "pt", "country": "BR", "timeZone": "America/Sao_Paulo",
+    "comment": "Daylight savings time starting at midnight"
+  },
+  {
+    "language": "tr", "country": "TR", "timeZone": "Asia/Istanbul",
+    "comment": "Dotted vs. dotless i"
+  },
+  {
+    "language": "zh", "country": "TW", "timeZone": "Asia/Taipei",
+    "comment": "Many characters with surrogate pairs, heavy use of private use area for temporary codepoints"
+  }
+]
