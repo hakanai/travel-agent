@@ -2,6 +2,8 @@
 Travel Agent Plugin
 ===================
 
+[![Build Status](https://travis-ci.org/trejkaz/travel-agent.svg?branch=master)](https://travis-ci.org/trejkaz/travel-agent)
+
 Travel Agent is a Gradle plugin to deliberately exacerbate globalisation bugs when running tests.
 Globalisation preferences are randomly selected from a collection of different locales when the
 test run is started.
