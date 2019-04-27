@@ -19,6 +19,10 @@ dependencies {
     "testImplementation"("org.hamcrest:hamcrest-junit:2.0.0.0")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+}
+
 configure<GradlePluginDevelopmentExtension> {
     plugins {
         register("travel-agent") {
