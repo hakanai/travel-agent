@@ -5,6 +5,7 @@ repositories {
 
 plugins {
     id("java-gradle-plugin")
+    id("nebula.java-cross-compile") version "3.0.1"
 }
 
 group = "org.trypticon.gradle.plugins"
