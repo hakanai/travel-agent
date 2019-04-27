@@ -10,16 +10,14 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.specs.Specs;
-import org.gradle.api.tasks.Input;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
-import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Extension holding configuration for Globetrotter.
+ * Extension holding per-project configuration for Travel Agent.
  */
 public class TravelAgentExtension {
 
@@ -38,10 +36,6 @@ public class TravelAgentExtension {
      */
     private Spec<? super Trip> filter = Specs.SATISFIES_ALL;
 
-    /**
-     * Lazy list of acceptable trips.
-     */
-    private final Provider<List<Trip>> acceptableTrips;
 
     /**
      * Constructs the travel agent.
@@ -56,12 +50,8 @@ public class TravelAgentExtension {
 
         availableTrips = objectFactory.listProperty(Trip.class);
         availableTrips.set(providerFactory.provider(TravelAgentExtension::loadPredefinedTrips));
-
-        acceptableTrips = availableTrips.map(trips ->
-                trips.stream()
-                        .filter(filter::isSatisfiedBy)
-                        .collect(ImmutableList.toImmutableList()));
     }
+
 
     /**
      * Loads predefined trips from a resource file.
@@ -85,7 +75,6 @@ public class TravelAgentExtension {
      *
      * @return {@code true} if enabled, {@code false} if disabled.
      */
-    @Input
     public Property<Boolean> getEnabled() {
         return enabled;
     }
@@ -100,21 +89,12 @@ public class TravelAgentExtension {
     }
 
     /**
-     * Gets the trips satisfying the filter.
+     * Gets the spec to match trips to accept.
      *
-     * Accessible primarily for the benefit of Gradle's up-to-date checks.
-     *
-     * As far as up-to-date checking is concerned, we only care about the list of acceptable trips,
-     * not which one was actually chosen at random. Even if you wanted to be purist about this and say
-     * that the chosen trip is the one which matters, all that happens is your test task will never be
-     * up-to-date.
-     *
-     * @return the trips satisfying the filter.
+     * @return the spec to match trips to accept.
      */
-    @Input
-    public Provider<List<Trip>> getAcceptableTrips()
-    {
-        return acceptableTrips;
+    public Spec<? super Trip> getFilter() {
+        return filter;
     }
 
     /**
@@ -125,7 +105,7 @@ public class TravelAgentExtension {
      * @param spec the spec to match failing trips.
      */
     public void knownFailing(Spec<Trip> spec) {
-        filter = Specs.intersect(Specs.negate(spec));
+        filter = Specs.intersect(filter, Specs.negate(spec));
     }
 
     /**
@@ -145,16 +125,5 @@ public class TravelAgentExtension {
         if (timeZone != null) {
             filter = Specs.intersect(filter, trip -> trip.getTimeZone().equals(timeZone.toString()));
         }
-    }
-
-    /**
-     * Suggests a trip which matches the requirements.
-     *
-     * @return the trip.
-     */
-    Trip suggestTrip() {
-        List<Trip> acceptableTrips = this.acceptableTrips.get();
-        int randomIndex = new SecureRandom().nextInt(acceptableTrips.size());
-        return acceptableTrips.get(randomIndex);
     }
 }

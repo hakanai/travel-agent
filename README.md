@@ -125,6 +125,28 @@ configure<TravelAgentExtension> {
 }
 ```
 
+Disabling the travel agent for a single task (the same pattern works for most other settings):
+
+(Groovy)
+
+```groovy
+test {
+    travelAgent {
+        enabled = false
+    }
+}
+```
+
+(Kotlin)
+
+```kotlin
+tasks.named<Test>("test") {
+    configure<TravelAgentTaskExtension> {
+        enabled.set(false)
+    }
+}
+```
+
 
 Parameters
 ----------

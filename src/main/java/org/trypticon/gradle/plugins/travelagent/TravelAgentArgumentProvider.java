@@ -18,9 +18,9 @@ import java.util.TimeZone;
 class TravelAgentArgumentProvider implements CommandLineArgumentProvider, Named {
     private static final Logger logger = Logging.getLogger(TravelAgentArgumentProvider.class);
 
-    private final TravelAgentExtension extension;
+    private final TravelAgentTaskExtension extension;
 
-    TravelAgentArgumentProvider(TravelAgentExtension extension) {
+    TravelAgentArgumentProvider(TravelAgentTaskExtension extension) {
         this.extension = extension;
     }
 
@@ -31,7 +31,7 @@ class TravelAgentArgumentProvider implements CommandLineArgumentProvider, Named 
      * @return the extension.
      */
     @Nested
-    public TravelAgentExtension getExtension() {
+    public TravelAgentTaskExtension getExtension() {
         return extension;
     }
 

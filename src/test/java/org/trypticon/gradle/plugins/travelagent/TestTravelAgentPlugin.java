@@ -138,7 +138,7 @@ public class TestTravelAgentPlugin {
     }
 
     @Test
-    public void testDisabled() throws Exception {
+    public void testDisabledGlobally() throws Exception {
         writeSampleCode();
 
         GradleRunner runner = createRunner(
@@ -152,7 +152,23 @@ public class TestTravelAgentPlugin {
     }
 
     @Test
-    public void testAvailableTrips() throws Exception {
+    public void testDisabledPerTask() throws Exception {
+        writeSampleCode();
+
+        GradleRunner runner = createRunner(
+                "tasks.named<Test>(\"test\") {",
+                "    configure<TravelAgentTaskExtension> {",
+                "        enabled.set(false)",
+                "    }",
+                "}");
+
+        BuildResult result = runner.withArguments("test", "--stacktrace", "-Duser.language=en").build();
+
+        assertThat(result.task(":test").getOutcome(), is(TaskOutcome.SUCCESS));
+    }
+
+    @Test
+    public void testAvailableTripsGlobally() throws Exception {
         writeSampleCode();
 
         GradleRunner runner = createRunner(
@@ -168,12 +184,46 @@ public class TestTravelAgentPlugin {
     }
 
     @Test
-    public void testKnownFailing() throws Exception {
+    public void testAvailableTripsPerTask() throws Exception {
+        writeSampleCode();
+
+        GradleRunner runner = createRunner(
+                "tasks.named<Test>(\"test\") {",
+                "    configure<TravelAgentTaskExtension> {",
+                "        availableTrips.empty()",
+                "        availableTrips.add(Trip(\"en\", \"AU\", \"Australia/Sydney\"))",
+                "        availableTrips.add(providers.provider { Trip(\"en\", \"AU\", \"Australia/Melbourne\") })",
+                "    }",
+                "}");
+
+        BuildResult result = runner.withArguments("test", "--stacktrace").build();
+
+        assertThat(result.task(":test").getOutcome(), is(TaskOutcome.SUCCESS));
+    }
+
+    @Test
+    public void testKnownFailingGlobally() throws Exception {
         writeSampleCode();
 
         GradleRunner runner = createRunner(
                 "configure<TravelAgentExtension> {",
                 "    knownFailing { trip -> trip.language == \"tr\" }",
+                "}");
+
+        BuildResult result = runner.withArguments("test", "--stacktrace").build();
+
+        assertThat(result.task(":test").getOutcome(), is(TaskOutcome.SUCCESS));
+    }
+
+    @Test
+    public void testKnownFailingPerTask() throws Exception {
+        writeSampleCode();
+
+        GradleRunner runner = createRunner(
+                "tasks.named<Test>(\"test\") {",
+                "    configure<TravelAgentTaskExtension> {",
+                "        knownFailing { trip -> trip.language == \"tr\" }",
+                "    }",
                 "}");
 
         BuildResult result = runner.withArguments("test", "--stacktrace").build();
