@@ -5,6 +5,8 @@ repositories {
 
 plugins {
     id("java-gradle-plugin")
+    id("jacoco")
+    id("pl.droidsonroids.jacoco.testkit") version "1.0.3"
 }
 
 group = "org.trypticon.gradle.plugins"
@@ -29,5 +31,20 @@ configure<GradlePluginDevelopmentExtension> {
             id = "org.trypticon.gradle.plugins.travel-agent"
             implementationClass = "org.trypticon.gradle.plugins.travelagent.TravelAgentPlugin"
         }
+    }
+}
+
+tasks {
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    minimum = BigDecimal.ONE
+                }
+            }
+        }
+    }
+    check {
+        dependsOn(jacocoTestCoverageVerification)
     }
 }

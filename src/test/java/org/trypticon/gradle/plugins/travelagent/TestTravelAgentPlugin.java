@@ -13,14 +13,14 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.text.MatchesPattern.matchesPattern;
 
 /**
@@ -76,6 +76,10 @@ public class TestTravelAgentPlugin {
     private GradleRunner createRunner(String... extraBuildFileContent) throws Exception
     {
         write("settings.gradle.kts", "rootProject.name = \"plugin-test-project\"");
+
+        try (InputStream stream = TestTravelAgentPlugin.class.getClassLoader().getResourceAsStream("testkit-gradle.properties")) {
+            Files.copy(stream, projectDir.toPath().resolve("gradle.properties"));
+        }
 
         // Normally we'd be including the plugin using the `plugins` block but there is some issue
         // where it can't be loaded from the classpath using that.
@@ -237,6 +241,21 @@ public class TestTravelAgentPlugin {
 
         GradleRunner runner = createRunner();
 
+        BuildResult result = runner.withArguments("test",
+                "-Ptravelagent.language=tr",
+                "-Ptravelagent.country=TR",
+                "-Ptravelagent.timezone=Asia/Istanbul",
+                "--stacktrace").buildAndFail();
+
+        assertThat(result.task(":test").getOutcome(), is(TaskOutcome.FAILED));
+    }
+
+    @Test
+    public void testLogging() throws Exception {
+        writeSampleCode();
+
+        GradleRunner runner = createRunner();
+
         BuildResult result = runner.withArguments("test", "-Ptravelagent.language=tr", "--stacktrace").buildAndFail();
 
         assertThat(result.getOutput(), containsString("Taking a trip to:\n" +
@@ -245,9 +264,17 @@ public class TestTravelAgentPlugin {
                 "    Time Zone:  Asia/Istanbul (Eastern European Time)\n" +
                 "    To reproduce manually:\n" +
                 "        -Ptravelagent.language=tr -Ptravelagent.country=TR -Ptravelagent.timezone=Asia/Istanbul"));
+    }
 
-        // And of course...
-        assertThat(result.task(":test").getOutcome(), is(TaskOutcome.FAILED));
+    @Test
+    public void testLoggingQuiet() throws Exception {
+        writeSampleCode();
+
+        GradleRunner runner = createRunner();
+
+        BuildResult result = runner.withArguments("test", "-Ptravelagent.language=tr", "--quiet", "--stacktrace").buildAndFail();
+
+        assertThat(result.getOutput(), not(containsString("Taking a trip to:")));
     }
 
     @Test
