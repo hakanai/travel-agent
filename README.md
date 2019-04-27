@@ -107,6 +107,24 @@ configure<TravelAgentExtension> {
 }
 ```
 
+Disabling the travel agent entirely:
+
+(Groovy)
+
+```groovy
+travelAgent {
+    enabled = false
+}
+```
+
+(Kotlin)
+
+```kotlin
+configure<TravelAgentExtension> {
+    enabled.set(false)
+}
+```
+
 
 Parameters
 ----------

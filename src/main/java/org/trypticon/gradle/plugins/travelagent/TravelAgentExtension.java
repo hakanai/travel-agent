@@ -5,6 +5,7 @@ import groovy.json.JsonSlurper;
 import org.gradle.api.Transformer;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.specs.Spec;
@@ -21,6 +22,11 @@ import java.util.Map;
  * Extension holding configuration for Globetrotter.
  */
 public class TravelAgentExtension {
+
+    /**
+     * Lazy property for enabled status.
+     */
+    private final Property<Boolean> enabled;
 
     /**
      * Lazy list of available trips.
@@ -45,6 +51,9 @@ public class TravelAgentExtension {
      */
     @Inject
     public TravelAgentExtension(@Nonnull ObjectFactory objectFactory, @Nonnull ProviderFactory providerFactory) {
+        enabled = objectFactory.property(Boolean.class);
+        enabled.set(true);
+
         availableTrips = objectFactory.listProperty(Trip.class);
         availableTrips.set(providerFactory.provider(TravelAgentExtension::loadPredefinedTrips));
 
@@ -69,6 +78,16 @@ public class TravelAgentExtension {
                         (String) record.get("country"),
                         (String) record.get("timeZone")))
                 .collect(ImmutableList.toImmutableList());
+    }
+
+    /**
+     * Gets whether the travel agent is enabled.
+     *
+     * @return {@code true} if enabled, {@code false} if disabled.
+     */
+    @Input
+    public Property<Boolean> getEnabled() {
+        return enabled;
     }
 
     /**

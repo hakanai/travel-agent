@@ -7,6 +7,7 @@ import org.gradle.api.tasks.Nested;
 import org.gradle.process.CommandLineArgumentProvider;
 
 import java.security.SecureRandom;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -36,8 +37,11 @@ class TravelAgentArgumentProvider implements CommandLineArgumentProvider, Named 
 
     @Override
     public Iterable<String> asArguments() {
+        if (!extension.getEnabled().get()) {
+            return Collections.emptyList();
+        }
+
         Trip trip = extension.suggestTrip();
-        Iterable<String> result = trip.toCommandLineArguments();
 
         if (logger.isLifecycleEnabled()) {
             String language = trip.getLanguage();
@@ -58,7 +62,7 @@ class TravelAgentArgumentProvider implements CommandLineArgumentProvider, Named 
                     language, country, timeZone);
         }
 
-        return result;
+        return trip.toCommandLineArguments();
     }
 
     @Override

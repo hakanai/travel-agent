@@ -106,6 +106,11 @@ public class TestTravelAgentPlugin {
         return GradleRunner.create().withProjectDir(projectDir);
     }
 
+    /**
+     * Writes some sample code into the project.
+     *
+     * @throws Exception if an error occurs.
+     */
     private void writeSampleCode() throws Exception {
         write("src/main/java/acme/Something.java",
                 "package acme;",
@@ -130,6 +135,20 @@ public class TestTravelAgentPlugin {
                 "        assertThat(new Something().manipulate(\"FISH\"), is(equalTo(\"fish\")));",
                 "    }",
                 "}");
+    }
+
+    @Test
+    public void testDisabled() throws Exception {
+        writeSampleCode();
+
+        GradleRunner runner = createRunner(
+                "configure<TravelAgentExtension> {",
+                "    enabled.set(false)",
+                "}");
+
+        BuildResult result = runner.withArguments("test", "--stacktrace", "-Duser.language=en").build();
+
+        assertThat(result.task(":test").getOutcome(), is(TaskOutcome.SUCCESS));
     }
 
     @Test
